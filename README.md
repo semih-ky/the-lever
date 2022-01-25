@@ -1,5 +1,7 @@
 # the-lever
 
+## it is not compatible for mobile
+
 ## Project setup
 ```
 npm install
