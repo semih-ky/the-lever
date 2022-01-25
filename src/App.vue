@@ -1,28 +1,36 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <Container>
+    <Navbar @start-game="startGame" />
+    <GameArea :isStart="isStart" @init-game="initGame" />
+  </Container>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Container from './components/Container.vue'
+import Navbar from './components/Navbar.vue'
+import GameArea from './components/GameArea.vue'
 
 export default {
   name: 'App',
+  data() {
+    return {
+      isStart: false,
+    }
+  },
+  methods: {
+    startGame() {
+      if (!this.isStart) {
+        this.isStart = true;
+      }
+    },
+    initGame() {
+      this.isStart = false;
+    }
+  },
   components: {
-    HelloWorld
+    Container,
+    Navbar,
+    GameArea
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
