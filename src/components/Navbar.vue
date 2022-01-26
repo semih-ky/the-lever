@@ -1,17 +1,16 @@
 <template>
   <div class="navbar-container">
     <div class="navbar-main">
-      <div class="nav-item">
-        <button @click="startHandler" type="button" class="nes-btn is-success">
-          Start!
-        </button>
-      </div>
 
       <div class="nav-item">
         <span class="brand-the nes-text is-error">the</span>
         <span class="brand-lever nes-text is-error">LEVER</span>
       </div>
 
+      <div class="nav-item">
+        Score: <span class="nes-text is-success">{{ score }}</span>
+      </div>
+      
       <div class="nav-end">
         <a
           href="https://nostalgic-css.github.io/NES.css/"
@@ -28,11 +27,11 @@
 <script>
 export default {
   name: 'Navbar',
-  methods: {
-    startHandler() {
-      this.$emit('start-game');
-    },
-  },
+  computed: {
+    score() {
+      return this.$store.state.score;
+    }
+  }
 };
 </script>
 

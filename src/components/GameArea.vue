@@ -1,6 +1,13 @@
 <template>
-  <div>
-    <!-- <button @click="startGame" type="button" class="nes-btn is-success">Start!</button> -->
+  <div style="position: relative;">
+    <button
+      v-if="!isStart"
+      @click="startGame"
+      type="button"
+      class="nes-btn is-success start-button"
+    >
+      Start!
+    </button>
     <div class="container">
       <div class="lever-area">
         <div class="col" v-for="column in gameArea.column" :key="column">
@@ -16,9 +23,7 @@
     <section>
       <dialog class="nes-dialog is-dark is-rounded" :id="dialogId">
         <form method="dialog">
-          <p :class="`nes-text ${isWin ? 'is-success' : 'is-error'}`">
-            {{ isWin ? 'You Win!' : 'Game Over!' }}
-          </p>
+          <p class="nes-text is-error">Game Over!</p>
           <menu class="dialog-menu">
             <button @click="cancelHandler" class="nes-btn is-default">
               Cancel
@@ -42,11 +47,9 @@ export default {
     Lever,
     'user-block': UserBlock,
   },
-  props: {
-    isStart: Boolean,
-  },
   data() {
     return {
+      isStart: false,
       gameArea: GAME_AREA,
       leverLength: LEVER_LENGTH,
       userBlock: {
@@ -80,6 +83,10 @@ export default {
   },
   methods: {
     startGame() {
+      if (!this.isStart) {
+        this.$store.commit('reset');
+      }
+      this.isStart = true;
       this.userBlock = { row: 0, column: 1, weight: 0 };
       this.fallSide = '';
       const { pcBlock, userBlock } = randomizeBlocks();
@@ -98,28 +105,32 @@ export default {
       window.addEventListener('keydown', this.windowEventHandler);
     },
     restart() {
+      this.$store.commit('reset');
       this.startGame();
     },
     cancelHandler() {
-      this.$emit('init-game');
+      this.isStart = false;
     },
   },
   watch: {
     userBlock: {
       handler: function (val) {
-        if (val.row > this.gameArea.row) {
+        if (val.row > this.gameArea.row + 1) {
           clearInterval(this.intervalID);
           window.removeEventListener('keydown', this.windowEventHandler);
           const { isWin, fallSide } = checkWin(this.userBlock, this.pcBlock);
+          console.log(isWin, fallSide);
           this.fallSide = fallSide;
-          this.isWin = isWin;
-          document.getElementById(this.dialogId).showModal();
+          if (fallSide) {
+            document.getElementById(this.dialogId).showModal();
+          }
+          if (isWin) {
+            this.$store.commit('increment');
+            this.startGame();
+          }
         }
       },
       deep: true,
-    },
-    isStart: function (val) {
-      if (val) this.startGame();
     },
   },
 };
@@ -159,5 +170,11 @@ export default {
 .kg {
   font-size: 8px;
   color: black;
+}
+.start-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-60px);
 }
 </style>
